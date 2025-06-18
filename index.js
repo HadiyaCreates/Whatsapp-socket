@@ -64,6 +64,30 @@ const addUser = (userData, socketId) => {
 const getUsers = (userId) => {
     return users.find(user => user.sub === userId);
 };
+// const removeUser = (socketId) => {
+//     users = users.filter(user => user.socketId !== socketId);
+// };
+
+// io.on("connection", (socket) => {
+//     console.log("user connected");
+
+//     socket.on("addUser", userData => {
+//         addUser(userData, socket.id);
+//         io.emit("getUsers", users);
+//     });
+
+//     socket.on("sendMessage", data => {
+//         const user = getUsers(data.receiverId);
+//         if (user) {
+//             io.to(user.socketId).emit("getMessage", data);
+//         }
+//     });
+// });
+// ...existing code...
+
+const removeUser = (socketId) => {
+    users = users.filter(user => user.socketId !== socketId);
+};
 
 io.on("connection", (socket) => {
     console.log("user connected");
@@ -78,5 +102,10 @@ io.on("connection", (socket) => {
         if (user) {
             io.to(user.socketId).emit("getMessage", data);
         }
+    });
+
+    socket.on("disconnect", () => {
+        removeUser(socket.id);
+        io.emit("getUsers", users);
     });
 });
